@@ -7,9 +7,10 @@ import { TaskList } from "./components/task-list/TaskList";
 function App() {
   const storageDataKey = 'todo-data';
   const storageIdKey = 'todo-last-id';
+  const storageSortingKey = 'todo-sorting';
   const [taskList, setTaskList] = useState(readLocalData());
   const [id, setId] = useState(readLocalId());
-  const [sortingAlgo, setSortingAlgo] = useState('timeAsc');
+  const [sortingAlgo, setSortingAlgo] = useState(readLocalSortingAlgo());
 
   useEffect(() => {
     localStorage.setItem(storageDataKey, JSON.stringify(taskList));
@@ -18,6 +19,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem(storageIdKey, JSON.stringify(id));
   }, [id]);
+
+  useEffect(() => {
+    localStorage.setItem(storageSortingKey, JSON.stringify(sortingAlgo));
+  }, [sortingAlgo]);
 
   function readLocalData() {
     const localData = localStorage.getItem(storageDataKey);
@@ -38,6 +43,17 @@ function App() {
 
     return 0;
   }
+
+  function readLocalSortingAlgo() {
+    const localData = localStorage.getItem(storageSortingKey);
+
+    if (localData) {
+      return JSON.parse(localData);
+    }
+
+    return 'timeAsc';
+  }
+
 
   function addTask(taskText, taskColor) {
     setTaskList(prev => [
@@ -110,7 +126,7 @@ function App() {
         <p>Ištrintos užduotys: -</p>
       </div>
       <FormCreateTask addTaskCallback={addTask} />
-      <ListActions updateSorting={updateSorting} />
+      <ListActions updateSorting={updateSorting} sortingAlgo={sortingAlgo} />
       <TaskList data={sortData()}
         updateTaskText={updateTaskText}
         updateTaskColor={updateTaskColor}
